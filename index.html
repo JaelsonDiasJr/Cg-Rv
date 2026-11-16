@@ -3,186 +3,352 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>Galeria RV - Computação Gráfica</title>
+    <title>Showroom RV 3D - Computação Gráfica</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <style>
       #hud-rv {
         position: fixed;
-        top: 12px;
+        top: 14px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(15, 23, 42, 0.88);
+        background: rgba(10, 15, 30, 0.82);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         color: #f8fafc;
-        padding: 10px 18px;
-        border-radius: 20px;
-        font-family: sans-serif;
+        padding: 12px 20px;
+        border-radius: 16px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 13px;
+        line-height: 1.4;
         z-index: 10;
         text-align: center;
         pointer-events: none;
         width: 88%;
-        max-width: 420px;
-        border: 1px solid #334155;
+        max-width: 440px;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      }
+      #hud-rv strong {
+        color: #38bdf8;
       }
       #btn-voltar {
         position: fixed;
-        bottom: 16px;
-        left: 16px;
-        background: rgba(30, 41, 59, 0.9);
-        color: white;
+        bottom: 18px;
+        left: 18px;
+        background: rgba(15, 23, 42, 0.88);
+        backdrop-filter: blur(6px);
+        color: #f8fafc;
         text-decoration: none;
-        padding: 10px 16px;
-        border-radius: 10px;
-        font-family: sans-serif;
+        padding: 10px 18px;
+        border-radius: 12px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 13px;
-        font-weight: bold;
+        font-weight: 600;
         z-index: 10;
-        border: 1px solid #475569;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       }
     </style>
   </head>
 
   <body>
     <div id="hud-rv">
-      <strong>Galeria RV:</strong> Gire o celular para olhar 360°. Fixe o cursor verde nos
-      <strong>sólidos</strong> ou nos <strong>discos do chão</strong> (teleporte).
+      <strong>Showroom RV 3D:</strong> Olhe ao redor em 360°. Fixe o cursor verde nos
+      <strong>modelos 3D</strong> para transformar ou nos <strong>anéis do piso</strong> para mover.
     </div>
 
-    <a id="btn-voltar" href="index.html">← Menu</a>
+    <a id="btn-voltar" href="index.html">← Voltar ao Menu</a>
 
-    <a-scene renderer="antialias: true; colorManagement: true;">
-      <!-- Céu em gradiente / atmosfera noturna -->
-      <a-sky color="#090d16"></a-sky>
+    <a-scene
+      renderer="antialias: true; colorManagement: true; exposure: 1.1;"
+      fog="type: exponential; color: #060b19; density: 0.032"
+    >
+      <!-- Céu Profundo -->
+      <a-sky color="#050914"></a-sky>
 
-      <!-- Rig do Jogador (permite teleporte mudando a posição deste container) -->
-      <a-entity id="rig-jogador" position="0 0 2">
+      <!-- Rig do Jogador -->
+      <a-entity id="rig-jogador" position="0 0 2.5">
         <a-camera position="0 1.6 0" look-controls="magicWindowTrackingEnabled: true" wasd-controls>
-          <!-- Cursor central com Raycasting (ativa em 1.5s) -->
+          <!-- Cursor com Raycasting Otimizado (ativa apenas objetos com class="interativo") -->
           <a-cursor
             fuse="true"
             fuse-timeout="1500"
+            raycaster="objects: .interativo"
             color="#22c55e"
-            geometry="primitive: ring; radiusInner: 0.014; radiusOuter: 0.024"
+            geometry="primitive: ring; radiusInner: 0.013; radiusOuter: 0.023"
+            material="shader: flat"
             animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 1500; from: 1 1 1; to: 0.25 0.25 0.25"
-            animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 200; to: 1 1 1"
-            animation__click="property: scale; startEvents: click; easing: easeInCubic; dur: 150; from: 0.25 0.25 0.25; to: 1 1 1"
+            animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeOutQuad; dur: 200; to: 1 1 1"
+            animation__click="property: scale; startEvents: click; easing: easeOutBack; dur: 200; from: 0.25 0.25 0.25; to: 1 1 1"
           ></a-cursor>
         </a-camera>
       </a-entity>
 
-      <!-- Iluminação da Galeria -->
-      <a-light type="ambient" color="#94a3b8" intensity="0.65"></a-light>
-      <a-light type="directional" position="3 6 4" intensity="0.85" color="#ffffff"></a-light>
-      <a-light type="point" position="0 3.5 -3" intensity="0.9" color="#38bdf8" distance="12"></a-light>
+      <!-- Sistema de Iluminação Cinematográfica -->
+      <a-light type="hemisphere" color="#60a5fa" groundColor="#0f172a" intensity="0.75"></a-light>
+      <a-light type="directional" position="4 8 5" intensity="0.9" color="#f8fafc"></a-light>
+      <!-- Luzes de destaque sobre cada estação -->
+      <a-light type="point" position="-3.4 3.2 -4" intensity="0.8" color="#38bdf8" distance="7"></a-light>
+      <a-light type="point" position="0 3.2 -5.2" intensity="0.8" color="#10b981" distance="7"></a-light>
+      <a-light type="point" position="3.4 3.2 -4" intensity="0.8" color="#f59e0b" distance="7"></a-light>
 
-      <!-- Piso e Grade de Referência Espacial -->
-      <a-plane position="0 0 -2" rotation="-90 0 0" width="14" height="14" material="color: #0f172a; roughness: 0.85;"></a-plane>
-      <a-grid-helper position="0 0.01 -2" size="14" divisions="14" color-center-line="#1e293b" color-grid="#1e293b"></a-grid-helper>
+      <!-- AMBIENTE ARQUITETÔNICO (SHOWROOM FUTURISTA) -->
+      <!-- Piso Principal e Grade Neon -->
+      <a-circle position="0 0 -2.5" rotation="-90 0 0" radius="11" material="color: #0b1120; roughness: 0.35; metalness: 0.6;"></a-circle>
+      <a-grid-helper position="0 0.005 -2.5" size="20" divisions="20" color-center-line="#1d4ed8" color-grid="#172554"></a-grid-helper>
 
-      <!-- Paredes Baixas da Galeria (criam sensação de recinto fechado em 360°) -->
-      <a-box position="0 1.5 -9" width="14" height="3" depth="0.2" material="color: #1e293b; roughness: 0.9;"></a-box>
-      <a-box position="-7 1.5 -2" width="0.2" height="3" depth="14" material="color: #1e293b; roughness: 0.9;"></a-box>
-      <a-box position="7 1.5 -2" width="0.2" height="3" depth="14" material="color: #1e293b; roughness: 0.9;"></a-box>
-      <a-box position="0 1.5 5" width="14" height="3" depth="0.2" material="color: #1e293b; roughness: 0.9;"></a-box>
+      <!-- Anel Luminoso Central no Piso -->
+      <a-ring position="0 0.01 -2.5" rotation="-90 0 0" radius-inner="5.8" radius-outer="5.95" material="color: #0284c7; shader: flat;"></a-ring>
+      <a-ring position="0 0.01 -2.5" rotation="-90 0 0" radius-inner="8.8" radius-outer="9.0" material="color: #1e3a8a; shader: flat;"></a-ring>
 
-      <!-- Painel Título na Parede Frontal -->
-      <a-entity position="0 2.3 -8.85">
-        <a-text value="LABORATORIO DE COMPUTACAO GRAFICA" align="center" color="#38bdf8" width="7"></a-text>
-        <a-text value="Olhe para os solidos para aplicar Transformacoes 3D" position="0 -0.35 0" align="center" color="#cbd5e1" width="4.5"></a-text>
+      <!-- Cúpula Geodésica Wireframe no Teto -->
+      <a-icosahedron
+        position="0 1 -2.5"
+        radius="10.5"
+        detail="1"
+        material="color: #1d4ed8; wireframe: true; opacity: 0.28; transparent: true;"
+      ></a-icosahedron>
+
+      <!-- Colunas Arquitetônicas com Faixas de LED -->
+      <a-entity position="-6.5 0 -6.5">
+        <a-box position="0 2.2 0" width="0.5" height="4.4" depth="0.5" material="color: #1e293b; metalness: 0.7; roughness: 0.3;"></a-box>
+        <a-box position="0.26 2.2 0.26" width="0.06" height="4.2" depth="0.06" material="color: #38bdf8; shader: flat;"></a-box>
+      </a-entity>
+      <a-entity position="6.5 0 -6.5">
+        <a-box position="0 2.2 0" width="0.5" height="4.4" depth="0.5" material="color: #1e293b; metalness: 0.7; roughness: 0.3;"></a-box>
+        <a-box position="-0.26 2.2 0.26" width="0.06" height="4.2" depth="0.06" material="color: #38bdf8; shader: flat;"></a-box>
+      </a-entity>
+      <a-entity position="-6.5 0 2.5">
+        <a-box position="0 2.2 0" width="0.5" height="4.4" depth="0.5" material="color: #1e293b; metalness: 0.7; roughness: 0.3;"></a-box>
+        <a-box position="0.26 2.2 -0.26" width="0.06" height="4.2" depth="0.06" material="color: #38bdf8; shader: flat;"></a-box>
+      </a-entity>
+      <a-entity position="6.5 0 2.5">
+        <a-box position="0 2.2 0" width="0.5" height="4.4" depth="0.5" material="color: #1e293b; metalness: 0.7; roughness: 0.3;"></a-box>
+        <a-box position="-0.26 2.2 -0.26" width="0.06" height="4.2" depth="0.06" material="color: #38bdf8; shader: flat;"></a-box>
       </a-entity>
 
-      <!-- ESTAÇÃO 1 (Esquerda): ROTAÇÃO -->
-      <a-entity position="-3 0 -4">
-        <!-- Pedestal -->
-        <a-cylinder position="0 0.5 0" radius="0.55" height="1" material="color: #334155;"></a-cylinder>
-        <!-- Cubo Interativo -->
-        <a-box
-          position="0 1.65 0"
-          width="0.85"
-          height="0.85"
-          depth="0.85"
-          material="color: #3b82f6; roughness: 0.5;"
-          animation="property: rotation; to: 360 360 0; dur: 2000; easing: easeInOutQuad; startEvents: click"
-        ></a-box>
-        <a-text value="1. ROTACAO (360°)" position="0 0.7 0.58" align="center" color="#ffffff" width="2.6"></a-text>
+      <!-- Letreiro Flutuante Principal -->
+      <a-entity position="0 3.7 -7.8">
+        <a-plane width="6.8" height="1.15" material="color: #0f172a; opacity: 0.85; transparent: true; roughness: 0.4;"></a-plane>
+        <a-ring position="0 0 -0.01" scale="3.45 0.62 1" radius-inner="0.98" radius-outer="1.0" material="color: #38bdf8; shader: flat;"></a-ring>
+        <a-text value="SHOWROOM DE COMPUTACAO GRAFICA" position="0 0.18 0.02" align="center" color="#38bdf8" width="6.5"></a-text>
+        <a-text value="Transformacoes Geometricas 3D em Realidade Virtual" position="0 -0.22 0.02" align="center" color="#cbd5e1" width="4.4"></a-text>
       </a-entity>
 
-      <!-- ESTAÇÃO 2 (Centro): ESCALA -->
-      <a-entity position="0 0 -5">
-        <a-cylinder position="0 0.5 0" radius="0.55" height="1" material="color: #334155;"></a-cylinder>
-        <!-- Toroide Interativo -->
-        <a-torus
-          position="0 1.7 0"
-          radius="0.48"
-          radius-tubular="0.16"
-          material="color: #10b981; roughness: 0.5;"
-          animation="property: scale; to: 1.5 1.5 1.5; dir: alternate; loop: 2; dur: 650; startEvents: click"
-        ></a-torus>
-        <a-text value="2. ESCALA (1.5x)" position="0 0.7 0.58" align="center" color="#ffffff" width="2.6"></a-text>
+      <!-- ===================================================================== -->
+      <!-- ESTAÇÃO 1 (Esquerda): BONECO ROBÔ ARTICULADO -> ROTAÇÃO (360°)        -->
+      <!-- ===================================================================== -->
+      <a-entity position="-3.4 0 -4" rotation="0 25 0">
+        <!-- Pedestal Tecnológico -->
+        <a-cylinder position="0 0.08 0" radius="0.85" height="0.16" material="color: #1e293b; metalness: 0.8; roughness: 0.2;"></a-cylinder>
+        <a-cylinder position="0 0.45 0" radius="0.65" height="0.65" material="color: #0f172a; metalness: 0.6; roughness: 0.3;"></a-cylinder>
+        <a-torus position="0 0.78 0" rotation="90 0 0" radius="0.66" radius-tubular="0.02" material="color: #38bdf8; shader: flat;"></a-torus>
+
+        <!-- Modelo 3D: Robô Futurista (Alvo do Raycasting) -->
+        <a-entity
+          class="interativo"
+          position="0 0.85 0"
+          animation="property: rotation; to: 0 360 0; dur: 2200; easing: easeInOutCubic; startEvents: click"
+        >
+          <!-- Hitbox invisível para facilitar o olhar no celular -->
+          <a-box position="0 0.85 0" width="1.1" height="1.7" depth="0.9" material="visible: false"></a-box>
+
+          <!-- Pés e Pernas -->
+          <a-box position="-0.16 0.06 0.04" width="0.16" height="0.12" depth="0.26" material="color: #334155; metalness: 0.7;"></a-box>
+          <a-box position="0.16 0.06 0.04" width="0.16" height="0.12" depth="0.26" material="color: #334155; metalness: 0.7;"></a-box>
+          <a-cylinder position="-0.16 0.32 0" radius="0.065" height="0.42" material="color: #94a3b8; metalness: 0.8;"></a-cylinder>
+          <a-cylinder position="0.16 0.32 0" radius="0.065" height="0.42" material="color: #94a3b8; metalness: 0.8;"></a-cylinder>
+
+          <!-- Quadril e Tronco -->
+          <a-box position="0 0.56 0" width="0.42" height="0.12" depth="0.26" material="color: #1e293b;"></a-box>
+          <a-box position="0 0.88 0" width="0.52" height="0.52" depth="0.32" material="color: #e2e8f0; metalness: 0.4; roughness: 0.25;"></a-box>
+          <!-- Núcleo de Energia no Peito -->
+          <a-cylinder position="0 0.92 0.165" rotation="90 0 0" radius="0.09" height="0.03" material="color: #38bdf8; shader: flat;"></a-cylinder>
+
+          <!-- Ombros e Braços -->
+          <a-sphere position="-0.34 1.05 0" radius="0.09" material="color: #3b82f6;"></a-sphere>
+          <a-sphere position="0.34 1.05 0" radius="0.09" material="color: #3b82f6;"></a-sphere>
+          <a-cylinder position="-0.36 0.80 0" radius="0.055" height="0.42" material="color: #cbd5e1; metalness: 0.6;"></a-cylinder>
+          <a-cylinder position="0.36 0.80 0" radius="0.055" height="0.42" material="color: #cbd5e1; metalness: 0.6;"></a-cylinder>
+          <a-sphere position="-0.36 0.56 0" radius="0.065" material="color: #334155;"></a-sphere>
+          <a-sphere position="0.36 0.56 0" radius="0.065" material="color: #334155;"></a-sphere>
+
+          <!-- Pescoço, Cabeça e Visor -->
+          <a-cylinder position="0 1.18 0" radius="0.07" height="0.12" material="color: #475569;"></a-cylinder>
+          <a-box position="0 1.38 0" width="0.42" height="0.32" depth="0.34" material="color: #f8fafc; metalness: 0.3; roughness: 0.2;"></a-box>
+          <!-- Visor Azul Neon -->
+          <a-box position="0 1.39 0.175" width="0.32" height="0.12" depth="0.02" material="color: #0284c7; shader: flat;"></a-box>
+          <a-sphere position="-0.08 1.39 0.188" radius="0.022" material="color: #e0f2fe; shader: flat;"></a-sphere>
+          <a-sphere position="0.08 1.39 0.188" radius="0.022" material="color: #e0f2fe; shader: flat;"></a-sphere>
+          <!-- Antena -->
+          <a-cylinder position="0 1.62 0" radius="0.015" height="0.18" material="color: #94a3b8;"></a-cylinder>
+          <a-sphere position="0 1.72 0" radius="0.035" material="color: #38bdf8; shader: flat;"></a-sphere>
+        </a-entity>
+
+        <!-- Placa Informativa da Estação 1 -->
+        <a-entity position="0 0.45 0.68">
+          <a-plane width="1.15" height="0.38" material="color: #0f172a; opacity: 0.92; transparent: true;"></a-plane>
+          <a-text value="1. ROTACAO (360°)" position="0 0.06 0.01" align="center" color="#38bdf8" width="2.4"></a-text>
+          <a-text value="Modelo: Robo Articulado" position="0 -0.09 0.01" align="center" color="#cbd5e1" width="1.9"></a-text>
+        </a-entity>
       </a-entity>
 
-      <!-- ESTAÇÃO 3 (Direita): TRANSLAÇÃO -->
-      <a-entity position="3 0 -4">
-        <a-cylinder position="0 0.5 0" radius="0.55" height="1" material="color: #334155;"></a-cylinder>
-        <!-- Icosaedro Interativo -->
-        <a-icosahedron
-          position="0 1.65 0"
-          radius="0.55"
-          material="color: #f59e0b; roughness: 0.5;"
-          animation="property: position; from: 0 1.65 0; to: 0 2.55 0; dir: alternate; loop: 2; dur: 550; startEvents: click"
-        ></a-icosahedron>
-        <a-text value="3. TRANSLACAO (+Y)" position="0 0.7 0.58" align="center" color="#ffffff" width="2.6"></a-text>
+      <!-- ===================================================================== -->
+      <!-- ESTAÇÃO 2 (Centro): CARRO ESPORTIVO -> ESCALA (1.35x)                 -->
+      <!-- ===================================================================== -->
+      <a-entity position="0 0 -5.2">
+        <!-- Pedestal Circular Amplo -->
+        <a-cylinder position="0 0.08 0" radius="1.15" height="0.16" material="color: #1e293b; metalness: 0.8; roughness: 0.2;"></a-cylinder>
+        <a-cylinder position="0 0.45 0" radius="0.95" height="0.65" material="color: #0f172a; metalness: 0.6; roughness: 0.3;"></a-cylinder>
+        <a-torus position="0 0.78 0" rotation="90 0 0" radius="0.96" radius-tubular="0.02" material="color: #10b981; shader: flat;"></a-torus>
+
+        <!-- Modelo 3D: Carro Esportivo Estilizado (Alvo do Raycasting) -->
+        <a-entity
+          class="interativo"
+          position="0 0.82 0"
+          rotation="0 -35 0"
+          animation="property: scale; to: 1.38 1.38 1.38; dir: alternate; loop: 2; dur: 700; easing: easeInOutQuad; startEvents: click"
+        >
+          <!-- Hitbox invisível -->
+          <a-box position="0 0.32 0" width="1.0" height="0.7" depth="1.7" material="visible: false"></a-box>
+
+          <!-- Chassi Inferior (Saia) -->
+          <a-box position="0 0.14 0" width="0.78" height="0.10" depth="1.48" material="color: #0f172a; metalness: 0.8;"></a-box>
+          <!-- Carroceria Principal (Verde Esmeralda Metálico) -->
+          <a-box position="0 0.26 0" width="0.76" height="0.18" depth="1.44" material="color: #10b981; metalness: 0.65; roughness: 0.2;"></a-box>
+          <!-- Capô Inclinado -->
+          <a-box position="0 0.33 0.45" rotation="8 0 0" width="0.72" height="0.10" depth="0.52" material="color: #059669; metalness: 0.65; roughness: 0.2;"></a-box>
+          <!-- Cabine / Vidros Fumê -->
+          <a-box position="0 0.44 -0.08" width="0.62" height="0.22" depth="0.72" material="color: #0f172a; metalness: 0.9; roughness: 0.1;"></a-box>
+          <!-- Teto -->
+          <a-box position="0 0.55 -0.10" width="0.58" height="0.04" depth="0.54" material="color: #10b981; metalness: 0.65; roughness: 0.2;"></a-box>
+
+          <!-- Aerofólio Traseiro -->
+          <a-box position="-0.24 0.42 -0.64" width="0.04" height="0.14" depth="0.10" material="color: #1e293b;"></a-box>
+          <a-box position="0.24 0.42 -0.64" width="0.04" height="0.14" depth="0.10" material="color: #1e293b;"></a-box>
+          <a-box position="0 0.49 -0.65" width="0.76" height="0.03" depth="0.16" material="color: #0f172a; metalness: 0.7;"></a-box>
+
+          <!-- Faróis Dianteiros LED -->
+          <a-box position="-0.25 0.27 0.725" width="0.16" height="0.05" depth="0.02" material="color: #e0f2fe; shader: flat;"></a-box>
+          <a-box position="0.25 0.27 0.725" width="0.16" height="0.05" depth="0.02" material="color: #e0f2fe; shader: flat;"></a-box>
+          <!-- Grade Frontal -->
+          <a-box position="0 0.20 0.725" width="0.34" height="0.08" depth="0.02" material="color: #020617;"></a-box>
+
+          <!-- Lanternas Traseiras -->
+          <a-box position="0 0.29 -0.725" width="0.68" height="0.05" depth="0.02" material="color: #ef4444; shader: flat;"></a-box>
+
+          <!-- 4 Rodas com Calotas -->
+          <!-- Dianteira Esquerda -->
+          <a-cylinder position="-0.40 0.14 0.44" rotation="0 0 90" radius="0.14" height="0.10" material="color: #090d16; roughness: 0.8;"></a-cylinder>
+          <a-cylinder position="-0.455 0.14 0.44" rotation="0 0 90" radius="0.08" height="0.01" material="color: #cbd5e1; metalness: 0.9;"></a-cylinder>
+          <!-- Dianteira Direita -->
+          <a-cylinder position="0.40 0.14 0.44" rotation="0 0 90" radius="0.14" height="0.10" material="color: #090d16; roughness: 0.8;"></a-cylinder>
+          <a-cylinder position="0.455 0.14 0.44" rotation="0 0 90" radius="0.08" height="0.01" material="color: #cbd5e1; metalness: 0.9;"></a-cylinder>
+          <!-- Traseira Esquerda -->
+          <a-cylinder position="-0.40 0.14 -0.44" rotation="0 0 90" radius="0.14" height="0.10" material="color: #090d16; roughness: 0.8;"></a-cylinder>
+          <a-cylinder position="-0.455 0.14 -0.44" rotation="0 0 90" radius="0.08" height="0.01" material="color: #cbd5e1; metalness: 0.9;"></a-cylinder>
+          <!-- Traseira Direita -->
+          <a-cylinder position="0.40 0.14 -0.44" rotation="0 0 90" radius="0.14" height="0.10" material="color: #090d16; roughness: 0.8;"></a-cylinder>
+          <a-cylinder position="0.455 0.14 -0.44" rotation="0 0 90" radius="0.08" height="0.01" material="color: #cbd5e1; metalness: 0.9;"></a-cylinder>
+        </a-entity>
+
+        <!-- Placa Informativa da Estação 2 -->
+        <a-entity position="0 0.45 0.98">
+          <a-plane width="1.25" height="0.38" material="color: #0f172a; opacity: 0.92; transparent: true;"></a-plane>
+          <a-text value="2. ESCALA (1.38x)" position="0 0.06 0.01" align="center" color="#10b981" width="2.4"></a-text>
+          <a-text value="Modelo: Carro Esportivo" position="0 -0.09 0.01" align="center" color="#cbd5e1" width="1.9"></a-text>
+        </a-entity>
       </a-entity>
 
-      <!-- PONTOS DE TELEPORTE NO CHÃO (olhe por 1.5s para mover a câmera até o ponto) -->
-      <a-ring
-        class="teleporte"
-        data-destino="-2.2 0 -1.8"
-        position="-2.2 0.03 -1.8"
-        rotation="-90 0 0"
-        radius-inner="0.25"
-        radius-outer="0.4"
-        color="#38bdf8"
-      ></a-ring>
+      <!-- ===================================================================== -->
+      <!-- ESTAÇÃO 3 (Direita): FOGUETE ESPACIAL -> TRANSLAÇÃO (+Y)              -->
+      <!-- ===================================================================== -->
+      <a-entity position="3.4 0 -4" rotation="0 -25 0">
+        <!-- Pedestal Plataforma de Lançamento -->
+        <a-cylinder position="0 0.08 0" radius="0.85" height="0.16" material="color: #1e293b; metalness: 0.8; roughness: 0.2;"></a-cylinder>
+        <a-cylinder position="0 0.45 0" radius="0.65" height="0.65" material="color: #0f172a; metalness: 0.6; roughness: 0.3;"></a-cylinder>
+        <a-torus position="0 0.78 0" rotation="90 0 0" radius="0.66" radius-tubular="0.02" material="color: #f59e0b; shader: flat;"></a-torus>
 
-      <a-ring
-        class="teleporte"
-        data-destino="0 0 -2.5"
-        position="0 0.03 -2.5"
-        rotation="-90 0 0"
-        radius-inner="0.25"
-        radius-outer="0.4"
-        color="#38bdf8"
-      ></a-ring>
+        <!-- Modelo 3D: Foguete Espacial (Alvo do Raycasting) -->
+        <a-entity
+          class="interativo"
+          position="0 0.92 0"
+          animation="property: position; from: 0 0.92 0; to: 0 2.15 0; dir: alternate; loop: 2; dur: 650; easing: easeInOutQuad; startEvents: click"
+        >
+          <!-- Hitbox invisível -->
+          <a-box position="0 0.75 0" width="0.9" height="1.6" depth="0.9" material="visible: false"></a-box>
 
-      <a-ring
-        class="teleporte"
-        data-destino="2.2 0 -1.8"
-        position="2.2 0.03 -1.8"
-        rotation="-90 0 0"
-        radius-inner="0.25"
-        radius-outer="0.4"
-        color="#38bdf8"
-      ></a-ring>
+          <!-- Bocal do Propulsor -->
+          <a-cone position="0 0.12 0" radius-bottom="0.16" radius-top="0.10" height="0.18" material="color: #334155; metalness: 0.8;"></a-cone>
+          <!-- Chama do Propulsor -->
+          <a-cone position="0 0.01 0" rotation="180 0 0" radius-bottom="0.11" radius-top="0.01" height="0.22" material="color: #f59e0b; shader: flat;"></a-cone>
 
-      <a-ring
-        class="teleporte"
-        data-destino="0 0 2"
-        position="0 0.03 2"
-        rotation="-90 0 0"
-        radius-inner="0.25"
-        radius-outer="0.4"
-        color="#94a3b8"
-      ></a-ring>
+          <!-- Fuselagem Principal -->
+          <a-cylinder position="0 0.65 0" radius="0.22" height="0.92" material="color: #f8fafc; metalness: 0.35; roughness: 0.25;"></a-cylinder>
+          <!-- Faixa Decorativa -->
+          <a-cylinder position="0 0.30 0" radius="0.223" height="0.10" material="color: #ef4444;"></a-cylinder>
+
+          <!-- Ogiva (Nariz Cônico) -->
+          <a-cone position="0 1.31 0" radius-bottom="0.22" radius-top="0.01" height="0.40" material="color: #ef4444; metalness: 0.4; roughness: 0.25;"></a-cone>
+
+          <!-- Vigia (Janela Espacial) -->
+          <a-torus position="0 0.78 0.21" radius="0.09" radius-tubular="0.02" material="color: #475569; metalness: 0.8;"></a-torus>
+          <a-circle position="0 0.78 0.215" radius="0.08" material="color: #38bdf8; shader: flat;"></a-circle>
+
+          <!-- 3 Aletas Estabilizadoras -->
+          <a-box position="0 0.32 0.24" rotation="15 0 0" width="0.04" height="0.34" depth="0.22" material="color: #ef4444;"></a-box>
+          <a-box position="-0.21 0.32 -0.12" rotation="-8 120 0" width="0.04" height="0.34" depth="0.22" material="color: #ef4444;"></a-box>
+          <a-box position="0.21 0.32 -0.12" rotation="-8 -120 0" width="0.04" height="0.34" depth="0.22" material="color: #ef4444;"></a-box>
+        </a-entity>
+
+        <!-- Placa Informativa da Estação 3 -->
+        <a-entity position="0 0.45 0.68">
+          <a-plane width="1.20" height="0.38" material="color: #0f172a; opacity: 0.92; transparent: true;"></a-plane>
+          <a-text value="3. TRANSLACAO (+Y)" position="0 0.06 0.01" align="center" color="#f59e0b" width="2.4"></a-text>
+          <a-text value="Modelo: Foguete 3D" position="0 -0.09 0.01" align="center" color="#cbd5e1" width="1.9"></a-text>
+        </a-entity>
+      </a-entity>
+
+      <!-- ===================================================================== -->
+      <!-- PONTOS DE TELEPORTE INTERATIVOS NO PISO                               -->
+      <!-- ===================================================================== -->
+      <!-- Ponto Estação 1 -->
+      <a-entity position="-2.3 0.02 -1.9">
+        <a-ring class="interativo teleporte" data-destino="-2.3 0 -1.9" rotation="-90 0 0" radius-inner="0.28" radius-outer="0.44" material="color: #38bdf8; shader: flat;"></a-ring>
+        <a-circle rotation="-90 0 0" radius="0.22" material="color: #0284c7; opacity: 0.35; transparent: true;"></a-circle>
+      </a-entity>
+
+      <!-- Ponto Estação 2 -->
+      <a-entity position="0 0.02 -2.6">
+        <a-ring class="interativo teleporte" data-destino="0 0 -2.6" rotation="-90 0 0" radius-inner="0.28" radius-outer="0.44" material="color: #10b981; shader: flat;"></a-ring>
+        <a-circle rotation="-90 0 0" radius="0.22" material="color: #059669; opacity: 0.35; transparent: true;"></a-circle>
+      </a-entity>
+
+      <!-- Ponto Estação 3 -->
+      <a-entity position="2.3 0.02 -1.9">
+        <a-ring class="interativo teleporte" data-destino="2.3 0 -1.9" rotation="-90 0 0" radius-inner="0.28" radius-outer="0.44" material="color: #f59e0b; shader: flat;"></a-ring>
+        <a-circle rotation="-90 0 0" radius="0.22" material="color: #d97706; opacity: 0.35; transparent: true;"></a-circle>
+      </a-entity>
+
+      <!-- Ponto Central / Visão Panorâmica -->
+      <a-entity position="0 0.02 2.5">
+        <a-ring class="interativo teleporte" data-destino="0 0 2.5" rotation="-90 0 0" radius-inner="0.28" radius-outer="0.44" material="color: #94a3b8; shader: flat;"></a-ring>
+        <a-circle rotation="-90 0 0" radius="0.22" material="color: #475569; opacity: 0.35; transparent: true;"></a-circle>
+      </a-entity>
     </a-scene>
 
     <script>
-      // Lógica de locomoção por teleporte ao fixar o olhar nos anéis do chão
+      // Teleporte com transição suave de posição (evita enjoo/desorientação em RV)
       document.querySelectorAll(".teleporte").forEach((anel) => {
         anel.addEventListener("click", () => {
           const destino = anel.getAttribute("data-destino");
           const rig = document.getElementById("rig-jogador");
-          rig.setAttribute("position", destino);
+          rig.setAttribute("animation", {
+            property: "position",
+            to: destino,
+            dur: 450,
+            easing: "easeOutQuad",
+          });
         });
       });
     </script>

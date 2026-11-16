@@ -61,13 +61,12 @@
     <div id="hud-rv">
       Gire o celular para olhar ao redor. Mire o <strong>cursor</strong> em um objeto por 1,5 s para
       transformá-lo, ou nos <strong>anéis do chão</strong> para se teletransportar.
-      
     </div>
 
     <a id="btn-voltar" href="index.html">← Menu</a>
 
     <a-scene renderer="antialias: true; colorManagement: true;">
-      <a-sky color="#04070d"></a-sky>
+      <a-sky color="#070b14"></a-sky>
       <a-entity estrelas></a-entity>
 
       <!-- Rig do jogador (teleporte move este container) -->
@@ -85,30 +84,54 @@
         </a-camera>
       </a-entity>
 
-      <!-- Iluminação -->
+      <!-- Iluminação (mantida idêntica ao seu index) -->
       <a-light type="hemisphere" color="#a5b4fc" groundColor="#0b1220" intensity="0.9"></a-light>
       <a-light type="directional" position="2 8 5" intensity="0.55" color="#ffffff"></a-light>
       <a-light type="point" position="-3.6 3 -3.5" intensity="0.9" color="#22d3ee" distance="8"></a-light>
       <a-light type="point" position="0 3 -4.5" intensity="0.9" color="#c084fc" distance="8"></a-light>
       <a-light type="point" position="3.6 3 -3.5" intensity="0.9" color="#fb923c" distance="8"></a-light>
 
-      <!-- Piso -->
-      <a-plane piso position="0 0 -2" rotation="-90 0 0" width="14" height="14"
-        material="color: #ffffff; roughness: 0.3; metalness: 0.5"></a-plane>
-      <a-ring position="0 0.015 -3.6" rotation="-90 0 0" radius-inner="2.6" radius-outer="2.64"
-        material="shader: flat; color: #22d3ee; opacity: 0.5; transparent: true"></a-ring>
-      <a-ring position="0 0.015 -3.6" rotation="-90 0 0" radius-inner="4.6" radius-outer="4.63"
-        material="shader: flat; color: #38bdf8; opacity: 0.25; transparent: true"></a-ring>
+      <!-- ========== NOVO AMBIENTE ARQUITETÔNICO ========== -->
+      <a-circle position="0 0 -2.5" rotation="-90 0 0" radius="11" material="color: #0f172a; roughness: 0.7;"></a-circle>
+      <a-ring position="0 0.01 -2.5" rotation="-90 0 0" radius-inner="5.8" radius-outer="5.95" color="#0284c7"></a-ring>
+      <a-ring position="0 0.01 -2.5" rotation="-90 0 0" radius-inner="8.8" radius-outer="9.0" color="#1e3a8a"></a-ring>
 
-      <!-- Paredes -->
-      <a-box position="0 2.25 -9" width="14" height="4.5" depth="0.2" material="color: #0f1a2e; roughness: 0.8; metalness: 0.3"></a-box>
-      <a-box position="-7 2.25 -2" width="0.2" height="4.5" depth="14" material="color: #0f1a2e; roughness: 0.8; metalness: 0.3"></a-box>
-      <a-box position="7 2.25 -2" width="0.2" height="4.5" depth="14" material="color: #0f1a2e; roughness: 0.8; metalness: 0.3"></a-box>
-      <a-box position="0 2.25 5" width="14" height="4.5" depth="0.2" material="color: #0f1a2e; roughness: 0.8; metalness: 0.3"></a-box>
-      <a-entity id="decoracao"></a-entity>
+      <!-- Cúpula Geodésica Wireframe no Teto -->
+      <a-icosahedron
+        position="0 1 -2.5"
+        radius="10.5"
+        detail="1"
+        material="color: #1d4ed8; wireframe: true;"
+      ></a-icosahedron>
+
+      <!-- Colunas Arquitetônicas com Faixas Neon -->
+      <a-entity position="-6.5 0 -6.5">
+        <a-box position="0 2.2 0" width="0.5" height="4.4" depth="0.5" color="#1e293b"></a-box>
+        <a-box position="0.26 2.2 0.26" width="0.06" height="4.2" depth="0.06" color="#38bdf8"></a-box>
+      </a-entity>
+      <a-entity position="6.5 0 -6.5">
+        <a-box position="0 2.2 0" width="0.5" height="4.4" depth="0.5" color="#1e293b"></a-box>
+        <a-box position="-0.26 2.2 0.26" width="0.06" height="4.2" depth="0.06" color="#38bdf8"></a-box>
+      </a-entity>
+      <a-entity position="-6.5 0 2.5">
+        <a-box position="0 2.2 0" width="0.5" height="4.4" depth="0.5" color="#1e293b"></a-box>
+        <a-box position="0.26 2.2 -0.26" width="0.06" height="4.2" depth="0.06" color="#38bdf8"></a-box>
+      </a-entity>
+      <a-entity position="6.5 0 2.5">
+        <a-box position="0 2.2 0" width="0.5" height="4.4" depth="0.5" color="#1e293b"></a-box>
+        <a-box position="-0.26 2.2 -0.26" width="0.06" height="4.2" depth="0.06" color="#38bdf8"></a-box>
+      </a-entity>
+
+      <!-- Letreiro Principal -->
+      <a-entity position="0 3.7 -7.8">
+        <a-plane width="6.8" height="1.15" color="#0f172a"></a-plane>
+        <a-plane width="6.9" height="1.25" position="0 0 -0.01" color="#38bdf8"></a-plane>
+        <a-text value="SHOWROOM DE COMPUTACAO GRAFICA" position="0 0.18 0.02" align="center" color="#f8fafc" width="6.2"></a-text>
+        <a-text value="TRANSFORMACOES GEOMETRICAS 3D" position="0 -0.22 0.02" align="center" color="#38bdf8" width="4.4"></a-text>
+      </a-entity>
 
       <!-- ========== ESTAÇÃO 1: ROBÔ (ROTAÇÃO) ========== -->
-    <a-entity position="-3.9 0 -4.2" rotation="0 35 0">
+      <a-entity position="-3.9 0 -4.2" rotation="0 35 0">
         <a-entity class="estacao" data-info="Rotação: R(θ) em torno do eixo Y (0° → 360°)">
           <a-cylinder position="0 0.17 0" radius="0.85" height="0.35" material="color: #1e293b; metalness: 0.6; roughness: 0.35"></a-cylinder>
           <a-torus position="0 0.35 0" rotation="90 0 0" radius="0.85" radius-tubular="0.015" material="shader: flat; color: #22d3ee"></a-torus>
@@ -145,13 +168,6 @@
           </a-entity>
         </a-entity>
 
-        <!--Cone de Luz 
-
-        <a-cone position="0 2.25 0" radius-bottom="0.56" radius-top="0.1" height="4.5" open-ended="true"
-          material="shader: flat; color: #a5f3fc; opacity: 0.05; transparent: true; side: double"></a-cone>
-
-        -->
-
         <a-entity position="0 0.25 1.15" rotation="-35 0 0">
           <a-plane width="1.7" height="0.3" material="shader: flat; color: #0b1220; opacity: 0.88; transparent: true"></a-plane>
           <a-text value="ROBO  |  ROTACAO" position="0 0 0.01" align="center" color="#67e8f9" width="2.4"></a-text>
@@ -178,13 +194,6 @@
             </a-entity>
           </a-entity>
         </a-entity>
-
-        <!--Cone de Luz 
-
-        <a-cone position="0 2.25 0" radius-bottom="1.1" radius-top="0.1" height="4.5" open-ended="true"
-          material="shader: flat; color: #e9d5ff; opacity: 0.05; transparent: true; side: double"></a-cone>
-
-      -->
 
         <a-entity position="0 0.25 1.15" rotation="-35 0 0">
           <a-plane width="1.7" height="0.3" material="shader: flat; color: #0b1220; opacity: 0.88; transparent: true"></a-plane>
@@ -225,13 +234,6 @@
           </a-entity>
         </a-entity>
 
-        <!--Cone de Luz 
-
-        <a-cone position="0 2.25 0" radius-bottom="1.5" radius-top="0.1" height="4.5" open-ended="true"
-          material="shader: flat; color: #fed7aa; opacity: 0.05; transparent: true; side: double"></a-cone>
-
-       -->
-
         <a-entity position="0 0.25 1.5" rotation="-35 0 0">
           <a-plane width="1.9" height="0.3" material="shader: flat; color: #0b1220; opacity: 0.88; transparent: true"></a-plane>
           <a-text value="CARRO  |  TRANSLACAO" position="0 0 0.01" align="center" color="#fdba74" width="2.6"></a-text>
@@ -262,58 +264,6 @@
         },
       });
 
-      // Piso com ladrilhos desenhados em canvas
-      AFRAME.registerComponent("piso", {
-        init() {
-          const c = document.createElement("canvas");
-          c.width = c.height = 256;
-          const x = c.getContext("2d");
-          x.fillStyle = "#0a1120";
-          x.fillRect(0, 0, 256, 256);
-          x.strokeStyle = "#1d3050";
-          x.lineWidth = 3;
-          x.strokeRect(1, 1, 254, 254);
-          x.strokeStyle = "#111b30";
-          x.lineWidth = 1;
-          x.beginPath();
-          x.moveTo(128, 0); x.lineTo(128, 256);
-          x.moveTo(0, 128); x.lineTo(256, 128);
-          x.stroke();
-          const t = new THREE.CanvasTexture(c);
-          t.wrapS = t.wrapT = THREE.RepeatWrapping;
-          t.repeat.set(7, 7);
-          t.anisotropy = 8;
-          this.el.addEventListener("loaded", () => {
-            const m = this.el.getObject3D("mesh");
-            m.material.map = t;
-            m.material.needsUpdate = true;
-          });
-        },
-      });
-
-      // Decoração das paredes (gerada por código)
-      const deco = document.getElementById("decoracao");
-      function add(tag, attrs) {
-        const e = document.createElement(tag);
-        for (const k in attrs) e.setAttribute(k, attrs[k]);
-        deco.appendChild(e);
-      }
-      const glow = "shader: flat; color: #22d3ee; opacity: 0.8; transparent: true";
-      [[0, -8.88, 14, 0.04, 0.04, 0], [-6.88, -2, 0.04, 0.04, 14, 0], [6.88, -2, 0.04, 0.04, 14, 0], [0, 4.88, 14, 0.04, 0.04, 0]]
-        .forEach(([x, z, w, h, d]) => {
-          add("a-box", { position: `${x} 0.15 ${z}`, width: w, height: h, depth: d, material: glow });
-          add("a-box", { position: `${x} 4.2 ${z}`, width: w, height: h, depth: d, material: glow });
-        });
-      // Pilastres e painéis luminosos
-      [-6, -2, 2, 6].forEach((x) => add("a-box", { position: `${x} 2.25 -8.82`, width: 0.35, height: 4.5, depth: 0.3, material: "color: #16233b; metalness: 0.5; roughness: 0.5" }));
-      [-6, -2, 2, 6].forEach((x) => add("a-plane", { position: `${x - 0.0} 1.9 -8.65`, width: 0.2, height: 2.6, material: "shader: flat; color: #38bdf8; opacity: 0.35; transparent: true" }));
-      [-5, -1, 3].forEach((z) => {
-        add("a-plane", { position: `-6.88 2.1 ${z}`, rotation: "0 90 0", width: 2.4, height: 1.5, material: "shader: flat; color: #0c1c3a" });
-        add("a-plane", { position: `6.88 2.1 ${z}`, rotation: "0 -90 0", width: 2.4, height: 1.5, material: "shader: flat; color: #0c1c3a" });
-        add("a-box", { position: `-6.87 2.1 ${z}`, width: 0.02, height: 1.58, depth: 2.48, material: "shader: flat; color: #22d3ee; opacity: 0.6; transparent: true" });
-        add("a-box", { position: `6.87 2.1 ${z}`, width: 0.02, height: 1.58, depth: 2.48, material: "shader: flat; color: #22d3ee; opacity: 0.6; transparent: true" });
-      });
-
       // Anéis de teleporte (construídos por código)
       document.querySelectorAll(".teleporte").forEach((grupo) => {
         const cor = grupo.getAttribute("data-cor") || "#38bdf8";
@@ -333,8 +283,6 @@
           document.getElementById("rig-jogador").setAttribute("position", grupo.getAttribute("data-destino"));
         });
       });
-
-      
     </script>
   </body>
 </html>

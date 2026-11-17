@@ -4,18 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>Computação Gráfica</title>
-
-    <!-- Polyfill WebXR para garantir tela dividida (Cardboard/Estéreo) em celulares comuns -->
-    <script src="https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.min.js"></script>
-    <script>
-      if (typeof WebXRPolyfill !== "undefined") {
-        new WebXRPolyfill({
-          cardboard: true,
-          allowCardboardOnDesktop: false
-        });
-      }
-    </script>
-
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <style>
       #hud-rv {
@@ -50,11 +38,10 @@
         font-weight: 600;
         min-height: 18px;
       }
-      #btn-voltar {
+      #btn-voltar, #btn-vr {
         position: fixed;
         bottom: 16px;
-        left: 16px;
-        background: rgba(8, 13, 24, 0.85);
+        background: rgba(8, 13, 24, 0.88);
         color: #e2e8f0;
         text-decoration: none;
         padding: 10px 16px;
@@ -62,10 +49,36 @@
         font-family: "Segoe UI", system-ui, sans-serif;
         font-size: 13px;
         font-weight: 600;
-        z-index: 10;
+        z-index: 20;
         border: 1px solid #1e3a5f;
+        cursor: pointer;
       }
-      #btn-voltar:focus-visible { outline: 2px solid #67e8f9; outline-offset: 2px; }
+      #btn-voltar { left: 16px; }
+      #btn-vr {
+        right: 16px;
+        border-color: #22d3ee;
+        color: #67e8f9;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      #btn-voltar:focus-visible, #btn-vr:focus-visible {
+        outline: 2px solid #67e8f9;
+        outline-offset: 2px;
+      }
+      /* Esconde HUD normal quando a tela está dividida em 2 */
+      body.em-vr #hud-rv,
+      body.em-vr #btn-voltar {
+        display: none;
+      }
+      body.em-vr #btn-vr {
+        bottom: 10px;
+        right: 50%;
+        transform: translateX(50%);
+        opacity: 0.65;
+        font-size: 11px;
+        padding: 6px 12px;
+      }
     </style>
   </head>
 
@@ -77,11 +90,9 @@
     </div>
 
     <a id="btn-voltar" href="index.html">← Menu</a>
+    <button id="btn-vr" type="button">🥽 Entrar em VR</button>
 
-    <a-scene
-      vr-mode-ui="enabled: true"
-      renderer="antialias: true; colorManagement: true;"
-    >
+    <a-scene vr-mode-ui="enabled: false" renderer="antialias: true; colorManagement: true;">
       <a-sky color="#070b14"></a-sky>
       <a-entity estrelas></a-entity>
 
@@ -279,7 +290,7 @@
         },
       });
 
-      // Ativação das estações e atualização do HUD
+      // Ativação das estações
       const hudInfo = document.getElementById("hud-info");
       document.querySelectorAll(".estacao").forEach((estacao) => {
         estacao.addEventListener("click", () => {
@@ -308,6 +319,89 @@
         grupo.addEventListener("click", () => {
           document.getElementById("rig-jogador").setAttribute("position", grupo.getAttribute("data-destino"));
         });
+      });
+
+      // ========== MODO ESTÉREO (TELA DIVIDIDA EM 2) ==========
+      const sceneEl = document.querySelector("a-scene");
+      const btnVR = document.getElementById("btn-vr");
+      let modoEstereo = false;
+      const stereoCam = new THREE.StereoCamera();
+      stereoCam.aspect = 0.5;
+      const tamanhoCanvas = new THREE.Vector2();
+
+      function instalarRenderEstereo() {
+        const renderer = sceneEl.renderer;
+        const renderOriginal = renderer.render.bind(renderer);
+
+        renderer.render = function (scene, camera) {
+          if (!modoEstereo) {
+            renderOriginal(scene, camera);
+            return;
+          }
+
+          renderer.getSize(tamanhoCanvas);
+          const w = tamanhoCanvas.x;
+          const h = tamanhoCanvas.y;
+
+          stereoCam.update(camera);
+          renderer.setScissorTest(true);
+
+          // Olho Esquerdo
+          renderer.setScissor(0, 0, w / 2, h);
+          renderer.setViewport(0, 0, w / 2, h);
+          renderOriginal(scene, stereoCam.cameraL);
+
+          // Olho Direito
+          renderer.setScissor(w / 2, 0, w / 2, h);
+          renderer.setViewport(w / 2, 0, w / 2, h);
+          renderOriginal(scene, stereoCam.cameraR);
+
+          renderer.setScissorTest(false);
+          renderer.setViewport(0, 0, w, h);
+        };
+      }
+
+      if (sceneEl.hasLoaded) {
+        instalarRenderEstereo();
+      } else {
+        sceneEl.addEventListener("loaded", instalarRenderEstereo);
+      }
+
+      btnVR.addEventListener("click", async () => {
+        modoEstereo = !modoEstereo;
+        document.body.classList.toggle("em-vr", modoEstereo);
+        btnVR.textContent = modoEstereo ? "✕ Sair VR" : "🥽 Entrar em VR";
+
+        if (modoEstereo) {
+          // Solicita permissão de giroscópio no iOS/Safari se necessário
+          if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+            try { await DeviceOrientationEvent.requestPermission(); } catch (e) {}
+          }
+          // Entra em tela cheia e trava em paisagem no celular
+          try {
+            if (document.documentElement.requestFullscreen) {
+              await document.documentElement.requestFullscreen();
+            }
+            if (screen.orientation && screen.orientation.lock) {
+              await screen.orientation.lock("landscape");
+            }
+          } catch (e) {}
+        } else {
+          try {
+            if (document.fullscreenElement && document.exitFullscreen) {
+              await document.exitFullscreen();
+            }
+          } catch (e) {}
+        }
+      });
+
+      // Se o usuário sair da tela cheia pelo botão voltar do celular, sai do modo VR
+      document.addEventListener("fullscreenchange", () => {
+        if (!document.fullscreenElement && modoEstereo) {
+          modoEstereo = false;
+          document.body.classList.remove("em-vr");
+          btnVR.textContent = "🥽 Entrar em VR";
+        }
       });
     </script>
   </body>

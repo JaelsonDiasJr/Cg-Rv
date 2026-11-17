@@ -84,9 +84,8 @@
 
   <body>
     <div id="hud-rv">
-      Mire o <strong>cursor</strong> em um objeto por 1,5 s para
+      Mire o <strong>cursor</strong> em um objeto por 1 s para
       ativá-lo, ou nos <strong>anéis do chão</strong> para se teletransportar.
-      <span id="hud-info">Pronto para explorar</span>
     </div>
 
     <a id="btn-voltar" href="index.html">← Menu</a>
@@ -196,7 +195,7 @@
 
         <a-entity position="0 0.25 1.15" rotation="-35 0 0">
           <a-plane width="1.7" height="0.3" material="shader: flat; color: #0b1220; opacity: 0.88; transparent: true"></a-plane>
-          <a-text value="ROBO  |  ROTACAO" position="0 0 0.01" align="center" color="#67e8f9" width="2.4"></a-text>
+          <a-text value="ROBOLDO" position="0 0 0.01" align="center" color="#67e8f9" width="2.4"></a-text>
         </a-entity>
       </a-entity>
 
@@ -223,7 +222,7 @@
 
         <a-entity position="0 0.25 1.15" rotation="-35 0 0">
           <a-plane width="1.7" height="0.3" material="shader: flat; color: #0b1220; opacity: 0.88; transparent: true"></a-plane>
-          <a-text value="PLANETA  |  ESCALA" position="0 0 0.01" align="center" color="#d8b4fe" width="2.4"></a-text>
+          <a-text value="PLANETA" position="0 0 0.01" align="center" color="#d8b4fe" width="2.4"></a-text>
         </a-entity>
       </a-entity>
 
@@ -262,7 +261,7 @@
 
         <a-entity position="0 0.25 1.5" rotation="-35 0 0">
           <a-plane width="1.9" height="0.3" material="shader: flat; color: #0b1220; opacity: 0.88; transparent: true"></a-plane>
-          <a-text value="CARRO  |  TRANSLACAO" position="0 0 0.01" align="center" color="#fdba74" width="2.6"></a-text>
+          <a-text value="CARRO" position="0 0 0.01" align="center" color="#fdba74" width="2.6"></a-text>
         </a-entity>
       </a-entity>
 
@@ -291,7 +290,7 @@
       });
 
       // Ativação das estações
-      const hudInfo = document.getElementById("hud-info");
+      
       document.querySelectorAll(".estacao").forEach((estacao) => {
         estacao.addEventListener("click", () => {
           const alvo = estacao.querySelector(".alvo-animacao");
